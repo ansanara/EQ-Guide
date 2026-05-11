@@ -52,21 +52,23 @@
       }
 
       header {
-        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
         margin-bottom: 1.5rem;
-        padding-left: 0.5rem;
+        padding: 0 0.5rem;
       }
 
-      header h1 {
+      .header-title h1 {
         font-size: 2.5rem;
         font-weight: 800;
         background: linear-gradient(to right, #60a5fa, #c084fc);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.2rem;
       }
 
-      header p {
+      .header-title p {
         color: var(--text-secondary);
         font-size: 1.1rem;
       }
@@ -74,12 +76,13 @@
       .visualizer-container {
         position: relative;
         width: 100%;
-        height: 350px;
+        height: 380px;
         background-color: #000;
         border-radius: 12px;
         overflow: hidden;
         box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
         border: 1px solid var(--border-color);
+        margin-bottom: 1.25rem;
       }
 
       canvas {
@@ -88,55 +91,39 @@
         display: block;
       }
 
-      .overlay-controls {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        display: flex;
-        gap: 1rem;
-        z-index: 10;
-      }
-
       .btn {
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
+        padding: 0.85rem 1.75rem;
+        border-radius: 10px;
         border: none;
         font-family: inherit;
-        font-weight: 600;
-        font-size: 0.9rem;
+        font-weight: 700;
+        font-size: 1rem;
         cursor: pointer;
         transition: all 0.2s ease;
+        white-space: nowrap;
       }
 
       .btn.primary {
         background-color: var(--accent-primary);
         color: white;
-        box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+        box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.4);
       }
 
       .btn.primary:hover {
         background-color: var(--accent-hover);
-        transform: translateY(-1px);
+        transform: translateY(-2px);
       }
 
       .btn.secondary {
-        background-color: transparent;
-        border: 1px solid var(--neon-color);
-        color: var(--neon-color);
-        box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+        background-color: rgba(239, 68, 68, 0.1);
+        border: 2px solid #ef4444;
+        color: #ef4444;
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
       }
 
       .dashboard {
         display: flex;
         flex-direction: column;
-        gap: 1.25rem;
-      }
-
-      .control-panel {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-        min-height: auto;
       }
 
       .settings-bar {
@@ -148,6 +135,7 @@
         border-radius: 12px;
         border: 1px solid var(--border-color);
         gap: 2rem;
+        margin-bottom: 1.25rem;
       }
 
       .mode-toggle {
@@ -190,7 +178,6 @@
       .sliders-row {
         display: flex;
         gap: 2rem;
-        flex-shrink: 0;
       }
 
       .control-group {
@@ -208,7 +195,7 @@
 
       input[type=range] {
         -webkit-appearance: none;
-        width: 150px;
+        width: 140px;
         height: 6px;
         background: var(--slider-track);
         border-radius: 3px;
@@ -218,48 +205,39 @@
       input[type=range]::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
         background: var(--text-primary);
         cursor: pointer;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         border: 2px solid var(--target-color);
-        transition: transform 0.1s;
-      }
-
-      input[type=range]:hover::-webkit-slider-thumb {
-        transform: scale(1.2);
-      }
-
-      .explanation-container {
-        min-height: auto;
       }
 
       .freq-list {
         list-style: none;
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
       }
 
       .freq-list li {
-        font-size: 0.95rem;
-        color: var(--text-secondary);
-        line-height: 1.6;
+        background: rgba(255,255,255,0.03);
+        padding: 0.75rem;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.05);
       }
 
       .freq-header {
         display: flex;
         align-items: center;
-        margin-bottom: 2px;
+        margin-bottom: 4px;
       }
 
       .freq-badge {
         display: inline-block;
         padding: 0.2rem 0.5rem;
         border-radius: 4px;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         font-weight: 800;
         margin-right: 0.5rem;
         color: #fff;
@@ -272,13 +250,18 @@
       .freq-air { background-color: #8b5cf6; }
 
       @media (max-width: 850px) {
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+        .btn {
+          width: 100%;
+        }
         .settings-bar {
           flex-direction: column;
           align-items: stretch;
           gap: 1.25rem;
-        }
-        .sliders-row {
-          justify-content: space-between;
         }
       }
 
@@ -288,24 +271,18 @@
           padding: 1rem;
           border-radius: 0;
         }
-        header h1 {
-          font-size: 1.5rem;
+        .header-title h1 {
+          font-size: 1.8rem;
         }
         .visualizer-container {
-          height: 220px;
+          height: 250px;
         }
         .sliders-row {
           flex-direction: column;
           gap: 1rem;
         }
-        .control-group {
-          justify-content: space-between;
-        }
         input[type=range] {
-          width: 60%;
-        }
-        .mode-toggle {
-          justify-content: center;
+          width: 100%;
         }
       }
     </style>
@@ -313,17 +290,17 @@
   <body>
     <div class="app-container">
       <header>
-        <h1>Target EQ Guide</h1>
-        <p>외부 믹서 조절을 위한 악기·보이스 타겟 스펙트럼 가이드</p>
+        <div class="header-title">
+          <h1>Target EQ Guide</h1>
+          <p>외부 믹서 조절을 위한 악기·보이스 타겟 스펙트럼 가이드</p>
+        </div>
+        <button id="btn-toggle-mic" class="btn primary">마이크 켜기</button>
       </header>
 
       <main class="dashboard">
         <section class="viz-panel">
           <div class="visualizer-container">
             <canvas id="visualizer"></canvas>
-            <div class="overlay-controls">
-              <button id="btn-toggle-mic" class="btn primary">마이크 켜기</button>
-            </div>
           </div>
         </section>
 
@@ -358,23 +335,21 @@
             </div>
           </div>
 
-          <div class="explanation-container">
-            <div id="expl-male" class="expl-content">
-              <ul class="freq-list">
-                <li><div class="freq-header"><span class="freq-badge freq-low">~80Hz</span> <strong>로우 컷</strong></div><p>에어컨, 진동, 팝 노이즈 등 불필요 저역 에너지를 제거하여 깔끔한 기초를 만듭니다.</p></li>
-                <li><div class="freq-header"><span class="freq-badge freq-midlow">150~250Hz</span> <strong>먹먹함 제거</strong></div><p>남성 목소리가 웅웅거리거나 탁하게 들리는 주범인 벙벙함을 줄여 소리를 단단하게 합니다.</p></li>
-                <li><div class="freq-header"><span class="freq-badge freq-mid">1kHz</span> <strong>목소리 밀도</strong></div><p>목소리의 중심 뼈대로 전체적인 힘과 밀도를 담당하며 다른 대역과의 기준점이 됩니다.</p></li>
-                <li><div class="freq-header"><span class="freq-badge freq-high">3~5kHz</span> <strong>존재감/명료도</strong></div><p>인간의 귀가 가장 민감한 영역으로 가사 전달력을 높여 목소리를 앞으로 당겨줍니다.</p></li>
-                <li><div class="freq-header"><span class="freq-badge freq-air">8kHz~</span> <strong>공기감</strong></div><p>시원하고 고급스러운 질감을 줍니다. 치찰음이 날카로우면 이 대역을 낮춰 조절하세요.</p></li>
-              </ul>
-            </div>
-            <div id="expl-female" class="expl-content" style="display: none;"><ul class="freq-list"><li><div class="freq-header"><span class="freq-badge freq-low">~120Hz</span> <strong>하이패스</strong></div><p>기본음이 높으므로 120Hz까지 과감하게 잘라 주변 노이즈를 효과적으로 차단합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-midlow">250~350Hz</span> <strong>탁함 조절</strong></div><p>상자 안에 갇힌 듯 답답한 소리가 날 때 줄여주면 훨씬 맑고 투명한 톤이 형성됩니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-mid">1kHz</span> <strong>기준 밸런스</strong></div><p>안정감을 주는 핵심 구간입니다. 너무 높이면 코맹맹이 소리가 날 수 있어 주의가 필요합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-high">4~6kHz</span> <strong>화사함 증가</strong></div><p>입체감과 화사함을 담당하며 청중에게 더 가까이 있는 듯한 선명한 느낌을 줍니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-air">7~9kHz</span> <strong>치찰음 억제</strong></div><p>날카로운 'ㅅ' 발음이 귀를 찌를 때 가이드라인에 맞춰 깎아주면 부드러워집니다.</p></li></ul></div>
-            <div id="expl-guitar" class="expl-content" style="display: none;"><ul class="freq-list"><li><div class="freq-header"><span class="freq-badge freq-low">~80Hz</span> <strong>바디 노이즈</strong></div><p>기타 통의 쿵쿵거림이나 저음 노이즈를 차단하여 다른 악기와의 엉킴을 방지합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-midlow">200Hz</span> <strong>부밍 제어</strong></div><p>특정 코드 연주 시 통울림이 너무 심해 벙벙거릴 때 깎아주어 소리를 단단하게 합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-mid">1kHz</span> <strong>현장감/어택</strong></div><p>손가락이나 피크가 줄에 닿는 찰진 소리를 결정하며 연주의 디테일을 살려줍니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-high">3.5kHz</span> <strong>리듬 선명도</strong></div><p>연주의 다이나믹과 리듬감을 강조하며 시원하게 믹스를 뚫고 나오는 핵심 구간입니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-air">8kHz~</span> <strong>반짝임</strong></div><p>새 줄 같은 찰랑거리는 금속 질감과 고급스러운 광택을 입히는 공간감 대역입니다.</p></li></ul></div>
-            <div id="expl-drum" class="expl-content" style="display: none;"><ul class="freq-list"><li><div class="freq-header"><span class="freq-badge freq-low">50~100Hz</span> <strong>킥 파워</strong></div><p>드럼의 묵직한 저음 파워를 담당하며 가슴을 울리는 강력한 펀치감을 형성합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-midlow">250~400Hz</span> <strong>소리 분리도</strong></div><p>스네어와 탐의 지저분한 웅웅거림을 제거하여 파츠별 소리가 뭉치지 않게 합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-mid">1~2kHz</span> <strong>스네어 타격</strong></div><p>스네어의 짜릿한 타격음과 박력을 결정하여 드럼 사운드를 힘있게 당겨옵니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-high">6~8kHz</span> <strong>하이햇 선명도</strong></div><p>하이햇과 심벌의 찰찰거리는 엣지를 살려 비트의 정확도를 귀에 꽂히게 만듭니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-air">10kHz~</span> <strong>심벌 공간감</strong></div><p>찬란하게 퍼지는 고음역 공간감을 담당하며 드럼에 시원한 개방감을 줍니다.</p></li></ul></div>
-            <div id="expl-keyboard" class="expl-content" style="display: none;"><ul class="freq-list"><li><div class="freq-header"><span class="freq-badge freq-low">~60Hz</span> <strong>험 노이즈</strong></div><p>건반 장비에서 발생하는 낮은 전기적 노이즈를 차단하여 깨끗한 시그널을 확보합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-midlow">100~300Hz</span> <strong>바디감</strong></div><p>따뜻하고 풍성한 울림을 결정하며 너무 많이 깎으면 소리가 가늘어질 수 있습니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-mid">1kHz</span> <strong>선율 중심</strong></div><p>멜로디의 뼈대가 되는 중음역으로 다른 악기와의 조화를 고려해 볼륨을 잡습니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-high">3~5kHz</span> <strong>타건 디테일</strong></div><p>건반을 누를 때의 물리적 타격감을 살려 연주의 섬세한 강약 전달력을 높입니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-air">8kHz~</span> <strong>고급 광택</strong></div><p>고음부의 반짝이는 느낌과 화려한 질감을 담당하여 소리를 밝고 선명하게 합니다.</p></li></ul></div>
-            <div id="expl-electric" class="expl-content" style="display: none;"><ul class="freq-list"><li><div class="freq-header"><span class="freq-badge freq-low">~100Hz</span> <strong>지저분함 제거</strong></div><p>앰프 웅웅거림이나 베이스 영역 침범을 막아 전체 사운드를 깔끔하게 정돈합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-midlow">250~500Hz</span> <strong>드라이브 무게</strong></div><p>톤의 무게감과 두께를 결정하며 디스토션 사운드에서 묵직한 힘을 부여합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-mid">800Hz</span> <strong>비음 제거</strong></div><p>깡통 소리 같은 답답한 중역대 질감을 깎아주어 톤을 더 세련되게 다듬습니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-high">2~4kHz</span> <strong>공격적 질감</strong></div><p>일렉 기타의 존재감으로 솔로 연주 시 명료도를 극대화하는 핵심 구간입니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-air">5kHz~</span> <strong>날카로움 제어</strong></div><p>불쾌한 고음 노이즈를 억제하여 청중의 귀 피로도를 낮추고 소리를 부드럽게 합니다.</p></li></ul></div>
-            <div id="expl-bass" class="expl-content" style="display: none;"><ul class="freq-list"><li><div class="freq-header"><span class="freq-badge freq-low">~40Hz</span> <strong>초저역 정돈</strong></div><p>소리를 뭉개는 아주 낮은 대역의 불필요 진동을 제거해 킥 드럼 공간을 확보합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-midlow">60~100Hz</span> <strong>묵직한 펀치</strong></div><p>베이스 기타의 핵심인 묵직한 '힘'이 나오는 구간으로 음악의 바닥을 지지합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-mid">300~500Hz</span> <strong>명료도 방해</strong></div><p>다른 악기와 겹쳐 지저분해지기 쉬운 구간으로 줄여주면 라인이 훨씬 선명해집니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-mid">800~1kHz</span> <strong>음정 뚜렷함</strong></div><p>음정이 정확하게 들리게 하는 핵심 대역으로 베이스의 움직임을 부각시킵니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-air">2~4kHz</span> <strong>연주 디테일</strong></div><p>손가락이나 피크의 찰진 소리를 살려 슬랩 등 연주의 디테일을 강조합니다.</p></li></ul></div>
+          <div id="expl-male" class="expl-content">
+            <ul class="freq-list">
+              <li><div class="freq-header"><span class="freq-badge freq-low">~80Hz</span> <strong>로우 컷</strong></div><p>에어컨, 진동, 팝 노이즈 등 불필요 저역 에너지를 제거하여 깔끔한 기초를 만듭니다.</p></li>
+              <li><div class="freq-header"><span class="freq-badge freq-midlow">150~250Hz</span> <strong>먹먹함 제거</strong></div><p>웅웅거리는 벙벙함을 줄여 소리를 단단하게 합니다.</p></li>
+              <li><div class="freq-header"><span class="freq-badge freq-mid">1kHz</span> <strong>목소리 밀도</strong></div><p>목소리의 중심 뼈대로 전체적인 힘과 밀도를 담당합니다.</p></li>
+              <li><div class="freq-header"><span class="freq-badge freq-high">3~5kHz</span> <strong>명료도</strong></div><p>가사 전달력을 높여 목소리를 앞으로 당겨줍니다.</p></li>
+              <li><div class="freq-header"><span class="freq-badge freq-air">8kHz~</span> <strong>공기감</strong></div><p>시원하고 고급스러운 질감을 줍니다.</p></li>
+            </ul>
           </div>
+          <div id="expl-female" class="expl-content" style="display: none;"><ul class="freq-list"><li><div class="freq-header"><span class="freq-badge freq-low">~120Hz</span> <strong>하이패스</strong></div><p>불필요한 저역을 제거합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-midlow">250~350Hz</span> <strong>투명도</strong></div><p>답답한 소리를 줄여 맑은 톤을 형성합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-mid">1kHz</span> <strong>안정감</strong></div><p>목소리의 안정감을 주는 구간입니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-high">4~6kHz</span> <strong>화사함</strong></div><p>화사하고 입체적인 느낌을 줍니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-air">7~9kHz</span> <strong>치찰음 제어</strong></div><p>날카로운 발음을 부드럽게 합니다.</p></li></ul></div>
+          <div id="expl-guitar" class="expl-content" style="display: none;"><ul class="freq-list"><li><div class="freq-header"><span class="freq-badge freq-low">~80Hz</span> <strong>바디 노이즈</strong></div><p>저음 노이즈를 차단합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-midlow">200Hz</span> <strong>부밍 제거</strong></div><p>벙벙거리는 울림을 깎아줍니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-mid">1kHz</span> <strong>어택감</strong></div><p>줄의 찰진 소리를 결정합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-high">3.5kHz</span> <strong>리듬감</strong></div><p>연주의 다이나믹을 강조합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-air">8kHz~</span> <strong>반짝임</strong></div><p>찰랑거리는 금속 질감을 더합니다.</p></li></ul></div>
+          <div id="expl-drum" class="expl-content" style="display: none;"><ul class="freq-list"><li><div class="freq-header"><span class="freq-badge freq-low">50~100Hz</span> <strong>킥 파워</strong></div><p>가슴을 울리는 펀치감을 형성합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-midlow">250~400Hz</span> <strong>분리도</strong></div><p>지저분한 웅웅거림을 제거합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-mid">1~2kHz</span> <strong>타격음</strong></div><p>스네어의 박력을 살려줍니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-high">6~8kHz</span> <strong>선명도</strong></div><p>하이햇의 엣지를 살려줍니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-air">10kHz~</span> <strong>공간감</strong></div><p>시원한 개방감을 줍니다.</p></li></ul></div>
+          <div id="expl-keyboard" class="expl-content" style="display: none;"><ul class="freq-list"><li><div class="freq-header"><span class="freq-badge freq-low">~60Hz</span> <strong>험 노이즈</strong></div><p>전기 노이즈를 차단합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-midlow">100~300Hz</span> <strong>바디감</strong></div><p>따뜻하고 풍성한 울림을 줍니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-mid">1kHz</span> <strong>멜로디</strong></div><p>선율의 중심 뼈대 대역입니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-high">3~5kHz</span> <strong>타건 디테일</strong></div><p>연주의 섬세함을 살려줍니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-air">8kHz~</span> <strong>고급 질감</strong></div><p>소리를 밝고 선명하게 합니다.</p></li></ul></div>
+          <div id="expl-electric" class="expl-content" style="display: none;"><ul class="freq-list"><li><div class="freq-header"><span class="freq-badge freq-low">~100Hz</span> <strong>정돈</strong></div><p>앰프 웅웅거림을 제거합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-midlow">250~500Hz</span> <strong>무게감</strong></div><p>드라이브의 힘을 부여합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-mid">800Hz</span> <strong>비음 제거</strong></div><p>답답한 질감을 다듬습니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-high">2~4kHz</span> <strong>존재감</strong></div><p>솔로의 명료도를 높여줍니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-air">5kHz~</span> <strong>노이즈 제어</strong></div><p>부드러운 고역을 만듭니다.</p></li></ul></div>
+          <div id="expl-bass" class="expl-content" style="display: none;"><ul class="freq-list"><li><div class="freq-header"><span class="freq-badge freq-low">~40Hz</span> <strong>초저역 정돈</strong></div><p>불필요한 진동을 제거합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-midlow">60~100Hz</span> <strong>펀치</strong></div><p>음악의 바닥을 지지하는 힘입니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-mid">300~500Hz</span> <strong>선명도</strong></div><p>라인을 뚜렷하게 만듭니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-mid">800~1kHz</span> <strong>음정</strong></div><p>정확한 음정을 전달합니다.</p></li><li><div class="freq-header"><span class="freq-badge freq-air">2~4kHz</span> <strong>디테일</strong></div><p>피킹 소리를 살려줍니다.</p></li></ul></div>
         </section>
       </main>
     </div>
