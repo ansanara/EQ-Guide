@@ -512,20 +512,38 @@
 
       async function initAudio() {
         try {
-          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          // 1. Get Stream
+          stream = await navigator.mediaDevices.getUserMedia({ 
+            audio: {
+              echoCancellation: false,
+              noiseSuppression: false,
+              autoGainControl: false
+            } 
+          });
+          
+          // 2. Setup Context
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          source = audioCtx.createMediaStreamSource(stream);
+          
+          // 3. Essential for Mobile (Resume on user gesture)
+          if (audioCtx.state === 'suspended') {
+            await audioCtx.resume();
+          }
+
           analyser = audioCtx.createAnalyser();
           analyser.fftSize = 4096;
           analyser.smoothingTimeConstant = smoothingValue;
+          
+          source = audioCtx.createMediaStreamSource(stream);
           source.connect(analyser);
 
           btnToggleMic.textContent = '마이크 끄기';
           btnToggleMic.classList.replace('primary', 'secondary');
           drawVisualizer();
+          
+          console.log('Audio initialized successfully');
         } catch (err) {
-          console.error('마이크 접근 권한이 필요합니다.', err);
-          alert('마이크 접근을 허용해야 스펙트럼 분석기를 사용할 수 있습니다.');
+          console.error('Mic Error:', err);
+          alert('마이크 접근 오류: ' + err.message + '\n브라우저 설정에서 마이크 권한이 허용되어 있는지 확인해 주세요.');
         }
       }
 
