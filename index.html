@@ -312,9 +312,8 @@
   </head>
   <body>
     <div class="app-container">
-      <header>
         <h1>Target EQ Guide</h1>
-        <p>외부 믹서 조절을 위한 악기·보이스 타겟 스펙트럼 가이드</p>
+        <p>외부 믹서 조절을 위한 악기·보이스 타겟 스펙트럼 가이드 <span style="font-size: 0.7rem; opacity: 0.5;">v1.0.2</span></p>
       </header>
 
       <main class="dashboard">
@@ -672,9 +671,13 @@
         drawTargetCurve();
       }
 
-      btnToggleMic.addEventListener('click', () => {
-        if (audioCtx && audioCtx.state !== 'closed') stopAudio();
-        else initAudio();
+      btnToggleMic.addEventListener('click', async () => {
+        console.log('Mic button clicked, current state:', audioCtx ? audioCtx.state : 'no context');
+        if (audioCtx && audioCtx.state !== 'closed') {
+          stopAudio();
+        } else {
+          await initAudio();
+        }
       });
 
       drawTargetCurve();
