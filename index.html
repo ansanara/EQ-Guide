@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EQ Target Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3659/3659774.png">
+    <style>
+      :root {
+        --bg-color: #0f1115;
+        --panel-bg: #1a1d24;
+        --text-primary: #e2e8f0;
+        --text-secondary: #94a3b8;
+        --accent-primary: #3b82f6;
+        --accent-hover: #2563eb;
+        --neon-color: #06b6d4;
+        --target-color: #22c55e;
+        --border-color: #334155;
+        --slider-track: #475569;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-primary);
+        line-height: 1.5;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .app-container {
+        width: 95%;
+        max-width: 1450px;
+        background-color: var(--panel-bg);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--border-color);
+      }
+
+      header {
+        text-align: left;
+        margin-bottom: 1.5rem;
+        padding-left: 0.5rem;
+      }
+
+      header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(to right, #60a5fa, #c084fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+      }
+
+      header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
+
+      .visualizer-container {
+        position: relative;
+        width: 100%;
+        height: 350px;
+        background-color: #000;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+        border: 1px solid var(--border-color);
+      }
+
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .overlay-controls {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        display: flex;
+        gap: 1rem;
+        z-index: 10;
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn.primary {
+        background-color: var(--accent-primary);
+        color: white;
+        box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+      }
+
+      .btn.primary:hover {
+        background-color: var(--accent-hover);
+        transform: translateY(-1px);
+      }
+
+      .btn.secondary {
+        background-color: transparent;
+        border: 1px solid var(--neon-color);
+        color: var(--neon-color);
+        box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+      }
+
+      .dashboard {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+
+      .control-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        min-height: auto;
+      }
+
+      .settings-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.3);
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        gap: 2rem;
+      }
+
+      .mode-toggle {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        background-color: var(--bg-color);
+        border-radius: 8px;
+        padding: 6px;
+        border: 1px solid var(--border-color);
+      }
+
+      .mode-toggle input[type="radio"] {
+        display: none;
+      }
+
+      .mode-toggle label {
+        text-align: center;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        transition: all 0.2s;
+        border-radius: 6px;
+      }
+
+      .mode-toggle input[type="radio"]:checked + label {
+        background-color: var(--accent-primary);
+        color: white;
+      }
+
+      .mode-toggle input[type="radio"]#mode-female:checked + label { background-color: #ec4899; }
+      .mode-toggle input[type="radio"]#mode-guitar:checked + label { background-color: #f59e0b; }
+      .mode-toggle input[type="radio"]#mode-drum:checked + label { background-color: #ef4444; }
+      .mode-toggle input[type="radio"]#mode-keyboard:checked + label { background-color: #8b5cf6; }
+      .mode-toggle input[type="radio"]#mode-electric:checked + label { background-color: #64748b; }
+      .mode-toggle input[type="radio"]#mode-bass:checked + label { background-color: #3730a3; }
+
+      .sliders-row {
+        display: flex;
+        gap: 2rem;
+        flex-shrink: 0;
+      }
+
+      .control-group {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .control-group label {
+        white-space: nowrap;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      input[type=range] {
+        -webkit-appearance: none;
+        width: 150px;
+        height: 6px;
+        background: var(--slider-track);
+        border-radius: 3px;
+        outline: none;
+      }
+
+      input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--text-primary);
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        border: 2px solid var(--target-color);
+        transition: transform 0.1s;
+      }
+
+      input[type=range]:hover::-webkit-slider-thumb {
+        transform: scale(1.2);
+      }
+
+      .explanation-container {
+        min-height: auto;
+      }
+
+      .freq-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+
+      .freq-list li {
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      .freq-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2px;
+      }
+
+      .freq-badge {
+        display: inline-block;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        margin-right: 0.5rem;
+        color: #fff;
+      }
+
+      .freq-low { background-color: #ef4444; }
+      .freq-midlow { background-color: #f59e0b; }
+      .freq-mid { background-color: #10b981; }
+      .freq-high { background-color: #3b82f6; }
+      .freq-air { background-color: #8b5cf6; }
+
+      @media (max-width: 850px) {
+        .settings-bar {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 1.25rem;
+        }
+        .sliders-row {
+          justify-content: space-between;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .app-container {
+          width: 100%;
+          padding: 1rem;
+          border-radius: 0;
+        }
+        header h1 {
+          font-size: 1.5rem;
+        }
+        .visualizer-container {
+          height: 220px;
+        }
+        .sliders-row {
+          flex-direction: column;
+          gap: 1rem;
+        }
+        .control-group {
+          justify-content: space-between;
+        }
+        input[type=range] {
+          width: 60%;
+        }
+        .mode-toggle {
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <header>
+        <h1>Target EQ Guide</h1>
+        <p>외부 믹서 조절을 위한 악기·보이스 타겟 스펙트럼 가이드</p>
+      </header>
+
+      <main class="dashboard">
+        <section class="viz-panel">
+          <div class="visualizer-container">
+            <canvas id="visualizer"></canvas>
+            <div class="overlay-controls">
+              <button id="btn-toggle-mic" class="btn primary">마이크 켜기</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="control-panel">
+          <div class="settings-bar">
+            <div class="mode-toggle">
+              <input type="radio" id="mode-male" name="mode" value="male" checked>
+              <label for="mode-male">🎙️ 남성</label>
+              <input type="radio" id="mode-female" name="mode" value="female">
+              <label for="mode-female">🎙️ 여성</label>
+              <input type="radio" id="mode-guitar" name="mode" value="guitar">
+              <label for="mode-guitar">🎸 어쿠스틱</label>
+              <input type="radio" id="mode-drum" name="mode" value="drum">
+              <label for="mode-drum">🥁 드럼</label>
+              <input type="radio" id="mode-keyboard" name="mode" value="keyboard">
+              <label for="mode-keyboard">🎹 건반</label>
+              <input type="radio" id="mode-electric" name="mode" value="electric">
+              <label for="mode-electric">🎸 전자기타</label>
+              <input type="radio" id="mode-bass" name="mode" value="bass">
+              <label for="mode-bass">🎸 베이스</label>
+            </div>
+
+            <div class="sliders-row">
+              <div class="control-group">
+                <label for="target-height">가이드 높이</label>
+                <input type="range" id="target-height" min="0" max="255" value="150" />
+              </div>
+              <div class="control-group">
+                <label for="smoothing">반응 속도</label>
+                <input type="range" id="smoothing" min="0.5" max="0.99" step="0.01" value="0.85" />
+              </div>
+            </div>
+          </div>
+
+          <div class="explanation-container">
+            <div id="expl-male" class="expl-content">
+              <ul class="freq-list">
+                <li><div class="freq-header"><span class="freq-badge freq-low">~80Hz</span> <strong>로우 컷</strong></div><p>에어컨, 진동, 팝 노이즈 등 불필요 저역 에너지를 제거하여 깔끔한 기초를 만듭니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-midlow">150~250Hz</span> <strong>먹먹함 제거</strong></div><p>남성 목소리가 웅웅거리거나 탁하게 들리는 주범인 벙벙함을 줄여 소리를 단단하게 합니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-mid">1kHz</span> <strong>목소리 밀도</strong></div><p>목소리의 중심 뼈대로 전체적인 힘과 밀도를 담당하며 다른 대역과의 기준점이 됩니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-high">3~5kHz</span> <strong>존재감/명료도</strong></div><p>인간의 귀가 가장 민감한 영역으로 가사 전달력을 높여 목소리를 앞으로 당겨줍니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-air">8kHz~</span> <strong>공기감</strong></div><p>시원하고 고급스러운 질감을 줍니다. 치찰음이 날카로우면 이 대역을 낮춰 조절하세요.</p></li>
+              </ul>
+            </div>
+            <div id="expl-female" class="expl-content" style="display: none;">
+              <ul class="freq-list">
+                <li><div class="freq-header"><span class="freq-badge freq-low">~120Hz</span> <strong>하이패스</strong></div><p>기본음이 높으므로 120Hz까지 과감하게 잘라 주변 노이즈를 효과적으로 차단합니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-midlow">250~350Hz</span> <strong>탁함 조절</strong></div><p>상자 안에 갇힌 듯 답답한 소리가 날 때 줄여주면 훨씬 맑고 투명한 톤이 형성됩니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-mid">1kHz</span> <strong>기준 밸런스</strong></div><p>안정감을 주는 핵심 구간입니다. 너무 높이면 코맹맹이 소리가 날 수 있어 주의가 필요합니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-high">4~6kHz</span> <strong>화사함 증가</strong></div><p>입체감과 화사함을 담당하며 청중에게 더 가까이 있는 듯한 선명한 느낌을 줍니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-air">7~9kHz</span> <strong>치찰음 억제</strong></div><p>날카로운 'ㅅ' 발음이 귀를 찌를 때 가이드라인에 맞춰 깎아주면 부드러워집니다.</p></li>
+              </ul>
+            </div>
+            <div id="expl-guitar" class="expl-content" style="display: none;">
+              <ul class="freq-list">
+                <li><div class="freq-header"><span class="freq-badge freq-low">~80Hz</span> <strong>바디 노이즈</strong></div><p>기타 통의 쿵쿵거림이나 저음 노이즈를 차단하여 다른 악기와의 엉킴을 방지합니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-midlow">200Hz</span> <strong>부밍 제어</strong></div><p>특정 코드 연주 시 통울림이 너무 심해 벙벙거릴 때 깎아주어 소리를 단단하게 합니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-mid">1kHz</span> <strong>현장감/어택</strong></div><p>손가락이나 피크가 줄에 닿는 찰진 소리를 결정하며 연주의 디테일을 살려줍니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-high">3.5kHz</span> <strong>리듬 선명도</strong></div><p>연주의 다이나믹과 리듬감을 강조하며 시원하게 믹스를 뚫고 나오는 핵심 구간입니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-air">8kHz~</span> <strong>반짝임</strong></div><p>새 줄 같은 찰랑거리는 금속 질감과 고급스러운 광택을 입히는 공간감 대역입니다.</p></li>
+              </ul>
+            </div>
+            <div id="expl-drum" class="expl-content" style="display: none;">
+              <ul class="freq-list">
+                <li><div class="freq-header"><span class="freq-badge freq-low">50~100Hz</span> <strong>킥 파워</strong></div><p>드럼의 묵직한 저음 파워를 담당하며 가슴을 울리는 강력한 펀치감을 형성합니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-midlow">250~400Hz</span> <strong>소리 분리도</strong></div><p>스네어와 탐의 지저분한 웅웅거림을 제거하여 파츠별 소리가 뭉치지 않게 합니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-mid">1~2kHz</span> <strong>스네어 타격</strong></div><p>스네어의 짜릿한 타격음과 박력을 결정하여 드럼 사운드를 힘있게 당겨옵니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-high">6~8kHz</span> <strong>하이햇 선명도</strong></div><p>하이햇과 심벌의 찰찰거리는 엣지를 살려 비트의 정확도를 귀에 꽂히게 만듭니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-air">10kHz~</span> <strong>심벌 공간감</strong></div><p>찬란하게 퍼지는 고음역 공간감을 담당하며 드럼에 시원한 개방감을 줍니다.</p></li>
+              </ul>
+            </div>
+            <div id="expl-keyboard" class="expl-content" style="display: none;">
+              <ul class="freq-list">
+                <li><div class="freq-header"><span class="freq-badge freq-low">~60Hz</span> <strong>험 노이즈</strong></div><p>건반 장비에서 발생하는 낮은 전기적 노이즈를 차단하여 깨끗한 시그널을 확보합니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-midlow">100~300Hz</span> <strong>바디감</strong></div><p>따뜻하고 풍성한 울림을 결정하며 너무 많이 깎으면 소리가 가늘어질 수 있습니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-mid">1kHz</span> <strong>선율 중심</strong></div><p>멜로디의 뼈대가 되는 중음역으로 다른 악기와의 조화를 고려해 볼륨을 잡습니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-high">3~5kHz</span> <strong>타건 디테일</strong></div><p>건반을 누를 때의 물리적 타격감을 살려 연주의 섬세한 강약 전달력을 높입니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-air">8kHz~</span> <strong>고급 광택</strong></div><p>고음부의 반짝이는 느낌과 화려한 질감을 담당하여 소리를 밝고 선명하게 합니다.</p></li>
+              </ul>
+            </div>
+            <div id="expl-electric" class="expl-content" style="display: none;">
+              <ul class="freq-list">
+                <li><div class="freq-header"><span class="freq-badge freq-low">~100Hz</span> <strong>지저분함 제거</strong></div><p>앰프 웅웅거림이나 베이스 영역 침범을 막아 전체 사운드를 깔끔하게 정돈합니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-midlow">250~500Hz</span> <strong>드라이브 무게</strong></div><p>톤의 무게감과 두께를 결정하며 디스토션 사운드에서 묵직한 힘을 부여합니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-mid">800Hz</span> <strong>비음 제거</strong></div><p>깡통 소리 같은 답답한 중역대 질감을 깎아주어 톤을 더 세련되게 다듬습니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-high">2~4kHz</span> <strong>공격적 질감</strong></div><p>일렉 기타의 존재감으로 솔로 연주 시 명료도를 극대화하는 핵심 구간입니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-air">5kHz~</span> <strong>날카로움 제어</strong></div><p>불쾌한 고음 노이즈를 억제하여 청중의 귀 피로도를 낮추고 소리를 부드럽게 합니다.</p></li>
+              </ul>
+            </div>
+            <div id="expl-bass" class="expl-content" style="display: none;">
+              <ul class="freq-list">
+                <li><div class="freq-header"><span class="freq-badge freq-low">~40Hz</span> <strong>초저역 정돈</strong></div><p>소리를 뭉개는 아주 낮은 대역의 불필요 진동을 제거해 킥 드럼 공간을 확보합니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-midlow">60~100Hz</span> <strong>묵직한 펀치</strong></div><p>베이스 기타의 핵심인 묵직한 '힘'이 나오는 구간으로 음악의 바닥을 지지합니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-mid">300~500Hz</span> <strong>명료도 방해</strong></div><p>다른 악기와 겹쳐 지저분해지기 쉬운 구간으로 줄여주면 라인이 훨씬 선명해집니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-mid">800~1kHz</span> <strong>음정 뚜렷함</strong></div><p>음정이 정확하게 들리게 하는 핵심 대역으로 베이스의 움직임을 부각시킵니다.</p></li>
+                <li><div class="freq-header"><span class="freq-badge freq-air">2~4kHz</span> <strong>연주 디테일</strong></div><p>손가락이나 피크의 찰진 소리를 살려 슬랩 등 연주의 디테일을 강조합니다.</p></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // PWA Service Worker Registration (Optional if sw.js exists)
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed: ', err));
+        });
+      }
+
+      // DOM Elements
+      const btnToggleMic = document.getElementById('btn-toggle-mic');
+      const canvas = document.getElementById('visualizer');
+      const ctx = canvas.getContext('2d');
+      const heightSlider = document.getElementById('target-height');
+      const smoothingSlider = document.getElementById('smoothing');
+      const radioMale = document.getElementById('mode-male');
+      const radioFemale = document.getElementById('mode-female');
+      const radioGuitar = document.getElementById('mode-guitar');
+      const radioDrum = document.getElementById('mode-drum');
+      const radioKeyboard = document.getElementById('mode-keyboard');
+      const radioElectric = document.getElementById('mode-electric');
+      const radioBass = document.getElementById('mode-bass');
+      const explMale = document.getElementById('expl-male');
+      const explFemale = document.getElementById('expl-female');
+      const explGuitar = document.getElementById('expl-guitar');
+      const explDrum = document.getElementById('expl-drum');
+      const explKeyboard = document.getElementById('expl-keyboard');
+      const explElectric = document.getElementById('expl-electric');
+      const explBass = document.getElementById('expl-bass');
+
+      let audioCtx;
+      let analyser;
+      let stream;
+      let source;
+
+      // Settings
+      let targetHeightBase = parseInt(heightSlider.value);
+      let smoothingValue = parseFloat(smoothingSlider.value);
+
+      heightSlider.addEventListener('input', (e) => {
+        targetHeightBase = parseInt(e.target.value);
+      });
+
+      smoothingSlider.addEventListener('input', (e) => {
+        smoothingValue = parseFloat(e.target.value);
+        if (analyser) {
+          analyser.smoothingTimeConstant = smoothingValue;
+        }
+      });
+
+      let currentMode = 'male';
+      const allExpls = { male: explMale, female: explFemale, guitar: explGuitar, drum: explDrum, keyboard: explKeyboard, electric: explElectric, bass: explBass };
+
+      function updateMode() {
+        if (radioMale.checked) currentMode = 'male';
+        else if (radioFemale.checked) currentMode = 'female';
+        else if (radioGuitar.checked) currentMode = 'guitar';
+        else if (radioDrum.checked) currentMode = 'drum';
+        else if (radioKeyboard.checked) currentMode = 'keyboard';
+        else if (radioElectric.checked) currentMode = 'electric';
+        else currentMode = 'bass';
+
+        Object.entries(allExpls).forEach(([key, el]) => {
+          el.style.display = key === currentMode ? 'block' : 'none';
+        });
+
+        if (!analyser || audioCtx.state === 'closed') {
+          ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          drawTargetCurve();
+        }
+      }
+
+      [radioMale, radioFemale, radioGuitar, radioDrum, radioKeyboard, radioElectric, radioBass].forEach(r => r.addEventListener('change', updateMode));
+
+      function resizeCanvas() {
+        const container = canvas.parentElement;
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+        drawTargetCurve();
+      }
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      async function initAudio() {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          source = audioCtx.createMediaStreamSource(stream);
+          analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 4096;
+          analyser.smoothingTimeConstant = smoothingValue;
+          source.connect(analyser);
+
+          btnToggleMic.textContent = '마이크 끄기';
+          btnToggleMic.classList.replace('primary', 'secondary');
+          drawVisualizer();
+        } catch (err) {
+          console.error('마이크 접근 권한이 필요합니다.', err);
+          alert('마이크 접근을 허용해야 스펙트럼 분석기를 사용할 수 있습니다.');
+        }
+      }
+
+      function stopAudio() {
+        if (stream) stream.getTracks().forEach(track => track.stop());
+        if (audioCtx) audioCtx.close();
+        btnToggleMic.textContent = '마이크 켜기';
+        btnToggleMic.classList.replace('secondary', 'primary');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawTargetCurve();
+      }
+
+      const LOG_MIN_FREQ = 20;
+      const LOG_MAX_FREQ = 11000;
+
+      function freqToX(freq, width) {
+        if (freq <= LOG_MIN_FREQ) return 0;
+        if (freq >= LOG_MAX_FREQ) return width;
+        return width * Math.log(freq / LOG_MIN_FREQ) / Math.log(LOG_MAX_FREQ / LOG_MIN_FREQ);
+      }
+
+      function xToFreq(x, width) {
+        return LOG_MIN_FREQ * Math.pow(LOG_MAX_FREQ / LOG_MIN_FREQ, x / width);
+      }
+
+      function drawTargetCurve() {
+        const width = canvas.width;
+        const height = canvas.height;
+        ctx.beginPath();
+        ctx.lineWidth = 4;
+        
+        const colors = {
+          male: { stroke: 'rgba(34, 197, 94, 0.8)', fill: 'rgba(34, 197, 94, 0.1)' },
+          female: { stroke: 'rgba(236, 72, 153, 0.8)', fill: 'rgba(236, 72, 153, 0.1)' },
+          guitar: { stroke: 'rgba(245, 158, 11, 0.8)', fill: 'rgba(245, 158, 11, 0.1)' },
+          drum: { stroke: 'rgba(239, 68, 68, 0.8)', fill: 'rgba(239, 68, 68, 0.1)' },
+          keyboard: { stroke: 'rgba(139, 92, 246, 0.8)', fill: 'rgba(139, 92, 246, 0.1)' },
+          electric: { stroke: 'rgba(100, 116, 139, 0.8)', fill: 'rgba(100, 116, 139, 0.1)' },
+          bass: { stroke: 'rgba(55, 48, 163, 0.8)', fill: 'rgba(55, 48, 163, 0.1)' }
+        };
+        
+        ctx.strokeStyle = colors[currentMode].stroke;
+        ctx.fillStyle = colors[currentMode].fill;
+
+        const baseY = height - targetHeightBase;
+        const curves = {
+          male: [{f:0,y:-100},{f:80,y:-50},{f:120,y:10},{f:250,y:-20},{f:500,y:0},{f:1000,y:0},{f:3000,y:20},{f:4500,y:40},{f:7000,y:10},{f:11000,y:-20}],
+          female: [{f:0,y:-100},{f:120,y:-50},{f:180,y:10},{f:300,y:-20},{f:600,y:0},{f:1000,y:0},{f:3500,y:20},{f:5500,y:40},{f:8000,y:-10},{f:11000,y:10}],
+          guitar: [{f:0,y:-100},{f:80,y:-50},{f:150,y:0},{f:200,y:-25},{f:500,y:0},{f:1000,y:10},{f:3500,y:30},{f:6000,y:0},{f:8000,y:20},{f:11000,y:-10}],
+          drum: [{f:0,y:40},{f:80,y:50},{f:180,y:0},{f:350,y:-30},{f:700,y:0},{f:1500,y:25},{f:3000,y:0},{f:7000,y:30},{f:10000,y:20},{f:11000,y:10}],
+          keyboard: [{f:0,y:-80},{f:60,y:-50},{f:200,y:10},{f:400,y:5},{f:1000,y:0},{f:2000,y:0},{f:4000,y:25},{f:7000,y:5},{f:9000,y:30},{f:11000,y:20}],
+          electric: [{f:0,y:-100},{f:100,y:-50},{f:250,y:10},{f:800,y:-15},{f:2000,y:30},{f:4000,y:20},{f:5000,y:-30},{f:11000,y:-80}],
+          bass: [{f:0,y:-80},{f:40,y:-30},{f:80,y:40},{f:200,y:0},{f:400,y:-20},{f:1000,y:25},{f:3000,y:15},{f:5000,y:-40},{f:11000,y:-90}]
+        };
+
+        const curvePoints = curves[currentMode];
+        ctx.moveTo(0, height);
+        for (let x = 0; x <= width; x++) {
+          const f = xToFreq(x, width);
+          let p1 = curvePoints[0], p2 = curvePoints[curvePoints.length-1];
+          for(let i=0; i<curvePoints.length-1; i++) {
+            if(f >= curvePoints[i].f && f <= curvePoints[i+1].f) { p1=curvePoints[i]; p2=curvePoints[i+1]; break; }
+          }
+          const ratio = p2.f===p1.f ? 0 : (f-p1.f)/(p2.f-p1.f);
+          const smooth = (1-Math.cos(ratio*Math.PI))/2;
+          const yOff = p1.y + (p2.y-p1.y)*smooth;
+          ctx.lineTo(x, baseY - yOff);
+        }
+        ctx.lineTo(width, height); ctx.closePath(); ctx.stroke(); ctx.fill();
+
+        // Draw Labels & Arrows
+        const allLabels = {
+          male: [{f:80,t:'Low Cut',d:'down'},{f:250,t:'Mud Cut',d:'down'},{f:1000,t:'Mid Base',d:'keep'},{f:4000,t:'Presence',d:'up'},{f:8000,t:'Air',d:'up'}],
+          female: [{f:120,t:'Low Cut',d:'down'},{f:300,t:'Mud Cut',d:'down'},{f:1000,t:'Mid Base',d:'keep'},{f:5500,t:'Presence',d:'up'},{f:8000,t:'De-Esser',d:'down'}],
+          guitar: [{f:80,t:'Low Cut',d:'down'},{f:200,t:'Boominess',d:'down'},{f:1000,t:'Attack',d:'up'},{f:3500,t:'Pick Bite',d:'up'},{f:8000,t:'Shimmer',d:'up'}],
+          drum: [{f:80,t:'Kick Sub',d:'up'},{f:350,t:'Mud Cut',d:'down'},{f:1500,t:'Snare',d:'up'},{f:7000,t:'Hi-Hat',d:'up'},{f:10000,t:'Cymbal',d:'up'}],
+          keyboard: [{f:60,t:'Low Cut',d:'down'},{f:200,t:'Body',d:'up'},{f:1000,t:'Mid Base',d:'keep'},{f:4000,t:'Key Attack',d:'up'},{f:9000,t:'Brilliance',d:'up'}],
+          electric: [{f:100,t:'Low Cut',d:'down'},{f:350,t:'Body',d:'keep'},{f:800,t:'Boxiness',d:'down'},{f:2500,t:'Bite',d:'up'},{f:5000,t:'High Cut',d:'down'}],
+          bass: [{f:40,t:'Low Cut',d:'down'},{f:80,t:'Punch',d:'up'},{f:400,t:'Mud Cut',d:'down'},{f:1000,t:'Growl',d:'up'},{f:3000,t:'Attack',d:'up'}]
+        };
+
+        allLabels[currentMode].forEach(item => {
+          const x = freqToX(item.f, width);
+          const fStr = item.f>=1000 ? (item.f/1000)+'k' : item.f;
+          ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center';
+          ctx.fillText(fStr+'Hz', x, 16);
+          ctx.fillStyle = '#94a3b8'; ctx.font = '10px Inter';
+          ctx.fillText(item.t, x, 30);
+          
+          // Simplified Arrow Draw
+          let p1 = curvePoints[0], p2 = curvePoints[curvePoints.length-1];
+          for(let i=0; i<curvePoints.length-1; i++) { if(item.f>=curvePoints[i].f && item.f<=curvePoints[i+1].f) { p1=curvePoints[i]; p2=curvePoints[i+1]; break; } }
+          const r = (item.f-p1.f)/(p2.f-p1.f);
+          const cy = baseY - (p1.y + (p2.y-p1.y)*((1-Math.cos(r*Math.PI))/2));
+          
+          if(item.d==='up') {
+            ctx.fillStyle = '#22c55e'; ctx.fillText('▲ 올리기', x, cy + 25);
+          } else if(item.d==='down') {
+            ctx.fillStyle = '#ef4444'; ctx.fillText('▼ 내리기', x, cy - 25);
+          } else {
+            ctx.fillStyle = '#94a3b8'; ctx.fillText('― 유지', x, cy - 20);
+          }
+        });
+      }
+
+      function drawVisualizer() {
+        if (!analyser || audioCtx.state === 'closed') return;
+        requestAnimationFrame(drawVisualizer);
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        analyser.getByteFrequencyData(dataArray);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const maxFreq = audioCtx.sampleRate / 2;
+        ctx.beginPath(); ctx.moveTo(0, canvas.height);
+        for (let px = 0; px < canvas.width; px++) {
+          const freq = xToFreq(px, canvas.width);
+          const binIndex = Math.min(Math.floor((freq / maxFreq) * bufferLength), bufferLength - 1);
+          ctx.lineTo(px, canvas.height - (dataArray[binIndex] / 255) * canvas.height);
+        }
+        ctx.lineTo(canvas.width, canvas.height);
+        const g = ctx.createLinearGradient(0, canvas.height, 0, 0);
+        g.addColorStop(0, 'rgba(6, 182, 212, 0)'); g.addColorStop(1, 'rgba(6, 182, 212, 0.8)');
+        ctx.fillStyle = g; ctx.fill();
+        ctx.strokeStyle = '#06b6d4'; ctx.lineWidth = 2; ctx.stroke();
+        drawTargetCurve();
+      }
+
+      btnToggleMic.addEventListener('click', () => {
+        if (audioCtx && audioCtx.state !== 'closed') stopAudio();
+        else initAudio();
+      });
+
+      drawTargetCurve();
+    </script>
+  </body>
+</html>
