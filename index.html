@@ -312,8 +312,9 @@
   </head>
   <body>
     <div class="app-container">
+      <header>
         <h1>Target EQ Guide</h1>
-        <p>외부 믹서 조절을 위한 악기·보이스 타겟 스펙트럼 가이드 <span style="font-size: 0.7rem; opacity: 0.5;">v1.0.2</span></p>
+        <p>외부 믹서 조절을 위한 악기·보이스 타겟 스펙트럼 가이드 <span style="font-size: 0.7rem; opacity: 0.5;">v1.0.3</span></p>
       </header>
 
       <main class="dashboard">
@@ -427,7 +428,12 @@
     </div>
 
     <script>
-      // PWA Service Worker Registration (Optional if sw.js exists)
+      // Global Error Handler
+      window.onerror = function(msg, url, line) {
+        alert("에러 발생: " + msg + "\n라인: " + line);
+      };
+
+      // PWA Service Worker Registration
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed: ', err));
@@ -510,6 +516,7 @@
       resizeCanvas();
 
       async function initAudio() {
+        alert("마이크 초기화를 시작합니다...");
         try {
           // 1. Get Stream
           stream = await navigator.mediaDevices.getUserMedia({ 
@@ -672,11 +679,14 @@
       }
 
       btnToggleMic.addEventListener('click', async () => {
-        console.log('Mic button clicked, current state:', audioCtx ? audioCtx.state : 'no context');
-        if (audioCtx && audioCtx.state !== 'closed') {
-          stopAudio();
-        } else {
-          await initAudio();
+        try {
+          if (audioCtx && audioCtx.state !== 'closed') {
+            stopAudio();
+          } else {
+            await initAudio();
+          }
+        } catch (err) {
+          alert("버튼 클릭 처리 중 에러: " + err.message);
         }
       });
 
